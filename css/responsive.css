@@ -1,0 +1,10 @@
+@media (min-width:560px){
+  .container{ padding-bottom:56px; }
+  .bottom-nav{ border-radius:var(--radius-lg); bottom:14px; box-shadow:var(--shadow-lg); border:1px solid var(--border); }
+  .toast{ bottom:110px; }
+}
+
+@media (max-width:360px){
+  .info-grid{ grid-template-columns:1fr 1fr; }
+  .info-tile:last-child{ grid-column:1 / -1; }
+}
