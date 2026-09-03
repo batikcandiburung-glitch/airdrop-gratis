@@ -4,9 +4,10 @@
 
 import { showAlert } from "./dialog.js";
 import { t } from "./i18n.js";
+import { ICON_CHECK, ICON_XMARK } from "./icons.js";
 
 /* ==========================
-   FORMAT URL
+FORMAT URL
 ========================== */
 
 export function formatUrl(url = "") {
@@ -15,7 +16,10 @@ export function formatUrl(url = "") {
 
     if (url === "") return "#";
 
-    if (url.startsWith("http://") || url.startsWith("https://")) {
+    if (
+        url.startsWith("http://") ||
+        url.startsWith("https://")
+    ) {
         return url;
     }
 
@@ -24,9 +28,9 @@ export function formatUrl(url = "") {
 }
 
 /* ==========================
-   QUICK FILTER PREDICATES
-   (dipakai bareng oleh dashboard.js untuk hitung,
-   dan project.js untuk filter list)
+QUICK FILTER PREDICATES
+(dipakai bareng oleh dashboard.js untuk hitung,
+dan project.js untuk filter list)
 ========================== */
 
 export function isTaskDueToday(project) {
@@ -79,7 +83,7 @@ function isTodayWeeklyTask(project) {
 }
 
 /* ==========================
-   FORMAT DATE
+FORMAT DATE
 ========================== */
 
 export function formatDate(timestamp) {
@@ -91,15 +95,17 @@ export function formatDate(timestamp) {
     if (isNaN(date.getTime())) return "-";
 
     return date.toLocaleDateString("en-US", {
+
         day: "numeric",
         month: "short",
         year: "numeric"
+
     });
 
 }
 
 /* ==========================
-   TOAST
+TOAST
 ========================== */
 
 export function showToast(message, duration = 2500, type = "success") {
@@ -113,9 +119,9 @@ export function showToast(message, duration = 2500, type = "success") {
     text.textContent = message;
 
     if (icon) {
-        icon.className = type === "error"
-            ? "fa-solid fa-xmark"
-            : "fa-solid fa-check";
+
+        icon.innerHTML = type === "error" ? ICON_XMARK : ICON_CHECK;
+
     }
 
     toast.classList.toggle("toast-error", type === "error");
@@ -125,14 +131,16 @@ export function showToast(message, duration = 2500, type = "success") {
     clearTimeout(toast.timer);
 
     toast.timer = setTimeout(() => {
+
         toast.classList.remove("show");
+
     }, duration);
 
 }
 
 /* ==========================
-   NOTIFICATION CENTER
-   (riwayat error/peringatan sistem, terpisah dari toast sekilas)
+NOTIFICATION CENTER
+(riwayat error/peringatan sistem, terpisah dari toast sekilas)
 ========================== */
 
 const NOTIF_KEY = "airdropHub_notifications";
@@ -198,14 +206,18 @@ export function clearNotifications() {
 }
 
 /* ==========================
-   LOADING
+LOADING
 ========================== */
 
 export function showLoading() {
 
     const loading = document.getElementById("loading");
 
-    if (loading) loading.style.display = "flex";
+    if (loading) {
+
+        loading.style.display = "flex";
+
+    }
 
 }
 
@@ -213,41 +225,62 @@ export function hideLoading() {
 
     const loading = document.getElementById("loading");
 
-    if (loading) loading.style.display = "none";
+    if (loading) {
+
+        loading.style.display = "none";
+
+    }
 
 }
 
 /* ==========================
-   CLEAR ADD FORM
+CLEAR ADD FORM
 ========================== */
 
 export function clearAddForm() {
 
     document.getElementById("name").value = "";
+
     document.getElementById("network").value = "";
+
     document.getElementById("website").value = "";
+
     document.getElementById("deadline").value = "";
+
     document.getElementById("note").value = "";
+
     document.getElementById("taskType").selectedIndex = 0;
+
     document.getElementById("priority").selectedIndex = 0;
+
     document.getElementById("status").selectedIndex = 0;
 
 }
 
 /* ==========================
-   VALIDASI PROJECT
+VALIDASI PROJECT
+========================== */
+
+/* ==========================
+VALIDASI PROJECT
 ========================== */
 
 export async function validateProject(project) {
 
     if (!project.name.trim()) {
+
         await showAlert(t("project.nameRequired"));
+
         return false;
+
     }
 
     if (!project.network.trim()) {
+
         await showAlert(t("project.chainRequired"));
+
         return false;
+
     }
 
     return true;
@@ -255,7 +288,7 @@ export async function validateProject(project) {
 }
 
 /* ==========================
-   SORT PROJECT
+SORT PROJECT
 ========================== */
 
 export function sortProjects(projects, mode = "default") {
@@ -264,7 +297,9 @@ export function sortProjects(projects, mode = "default") {
 
         return [...projects].sort((a, b) => {
 
-            if (!a.deadline && !b.deadline) return a.name.localeCompare(b.name, "en");
+            if (!a.deadline && !b.deadline)
+                return a.name.localeCompare(b.name, "en");
+
             if (!a.deadline) return 1;
             if (!b.deadline) return -1;
 
@@ -275,52 +310,81 @@ export function sortProjects(projects, mode = "default") {
     }
 
     if (mode === "newest") {
-        return [...projects].sort((a, b) => b.id - a.id);
+
+        return [...projects].sort(
+            (a, b) => b.id - a.id
+        );
+
     }
 
-    const statusOrder = { Active: 1, Waitlist: 2, Pending: 3, Complete: 4 };
+    const statusOrder = {
+
+        Active: 1,
+        Waitlist: 2,
+        Pending: 3,
+        Complete: 4
+
+    };
 
     return [...projects].sort((a, b) => {
 
         const statusA = statusOrder[a.status] ?? 999;
         const statusB = statusOrder[b.status] ?? 999;
 
-        if (statusA !== statusB) return statusA - statusB;
+        if (statusA !== statusB)
+            return statusA - statusB;
 
-        return a.name.localeCompare(b.name, "en", { sensitivity: "base" });
+        return a.name.localeCompare(
+            b.name,
+            "en",
+            { sensitivity: "base" }
+        );
 
     });
 
 }
 
 /* ==========================
-   STATUS COLOR
+STATUS COLOR
 ========================== */
 
 export function statusClass(status) {
 
     switch (status) {
-        case "Active": return "active";
-        case "Pending": return "pending";
-        case "Waitlist": return "waitlist";
-        case "Complete": return "complete";
-        default: return "";
+
+        case "Active":
+            return "active";
+
+        case "Pending":
+            return "pending";
+
+        case "Waitlist":
+            return "waitlist";
+
+        case "Complete":
+            return "complete";
+
+        default:
+            return "";
+
     }
 
-}
+  }
 
 /* ==========================
-   STATUS LABEL (untuk ditampilkan)
+STATUS LABEL (untuk ditampilkan)
 ========================== */
 
 export function statusLabel(status) {
 
     switch (status) {
+
         case "Active": return t("project.active");
         case "Pending": return t("project.pending");
         case "Waitlist": return t("project.waitlist");
         case "Complete": return t("project.complete");
         default: return status;
+
     }
 
 }
