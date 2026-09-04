@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Airdrop Hub — Farming Command Center</title>
 <meta name="description" content="Track every airdrop farm, deadline and wallet in one clean dashboard.">
+<meta name="theme-color" content="#0b0d10">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -30,7 +31,13 @@
 
     <header>
       <div class="brand">
-        <div class="brand-mark"><i class="fa-solid fa-rocket"></i></div>
+        <div class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none">
+            <circle cx="12" cy="12" r="2.4" fill="var(--accent)"/>
+            <circle cx="12" cy="12" r="6.5" stroke="var(--accent)" stroke-width="1.4" opacity=".55"/>
+            <circle cx="12" cy="12" r="10.5" stroke="var(--accent)" stroke-width="1.2" opacity=".25"/>
+          </svg>
+        </div>
         <div class="brand-text">
           <span class="wordmark">Airdrop <span class="tag">HUB</span></span>
           <span class="status-line"><span class="status-dot"></span> <span data-i18n="status.tracking">Tracking active</span></span>
@@ -265,7 +272,7 @@
         <label class="field-label" for="securityNewPassword" data-i18n="profile.newPassword">Password Baru</label>
         <input type="password" id="securityNewPassword" placeholder="Minimal 6 karakter" autocomplete="new-password" data-i18n-ph="profile.newPasswordPh">
 
-        <p id="securityError" style="color:#f0616b; font-size:12.5px; margin:-6px 0 12px; display:none;"></p>
+        <p id="securityError" style="color:var(--danger); font-size:12.5px; margin:-6px 0 12px; display:none;"></p>
 
         <button id="securityUpdateBtn" class="btn-add" style="width:100%;" data-i18n="profile.updatePassword">Update Password</button>
       </div>
@@ -404,7 +411,7 @@
   <!-- ================= NOTIFICATIONS MODAL ================= -->
   <div class="modal" id="notifModal">
     <div class="modal-content">
-      <div class="page-header" style="margin-bottom:14px;">
+      <div class="page-header" style="margin-bottom:14px; padding-top:0;">
         <h2><i class="fa-solid fa-bell"></i> <span data-i18n="notif.title">Notifications</span></h2>
         <button id="closeNotifModal" class="close-menu-btn" aria-label="Close">
           <i class="fa-solid fa-xmark"></i>
@@ -437,11 +444,11 @@
       <label class="field-label" for="cloudAuthPassword" data-i18n="cloud.password">Password</label>
       <input type="password" id="cloudAuthPassword" placeholder="Minimal 6 karakter" autocomplete="current-password" data-i18n-ph="cloud.passwordPh">
 
-      <p id="cloudAuthError" style="color:#f0616b; font-size:12.5px; margin:-6px 0 12px; display:none;"></p>
+      <p id="cloudAuthError" style="color:var(--danger); font-size:12.5px; margin:-6px 0 12px; display:none;"></p>
 
       <div class="modal-button">
         <button id="cloudAuthSkip" style="background:var(--surface-3); color:var(--text-muted); border:1px solid var(--border) !important;" data-i18n="cloud.skip">Nanti saja</button>
-        <button id="cloudAuthLoginBtn" style="background:var(--accent); color:#0a0d14;" data-i18n="cloud.login">Login</button>
+        <button id="cloudAuthLoginBtn" data-i18n="cloud.login">Login</button>
       </div>
 
       <p style="text-align:center; font-size:12.5px; color:var(--text-muted); margin-top:14px;">
@@ -474,7 +481,7 @@
   </div>
 
   <div id="toast" class="toast">
-    <span class="toast-icon"><i id="toastIcon"><svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></i></span>
+    <span class="toast-icon"><i class="fa-solid fa-check" id="toastIcon"></i></span>
     <span id="toastText">Success</span>
   </div>
 
