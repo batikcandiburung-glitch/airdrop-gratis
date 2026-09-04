@@ -5,28 +5,24 @@
 import { showToast } from "./helpers.js";
 import { showAlert, showConfirm } from "./dialog.js";
 import { pushToCloud } from "./cloudSync.js";
-import { ICON_COPY, ICON_TRASH } from "./icons.js";
+import { t } from "./i18n.js";
 
 const STORAGE_KEY = "airdropHub_wallets";
 
 const CHAIN_ICONS = {
-
     "Ethereum": "🔷",
     "Solana": "🟣",
     "BNB": "🟡",
     "Gram (TON)": "💎",
     "Lainnya": "🔗"
-
 };
 
 const CHAIN_COLORS = {
-
     "Ethereum": "#5b8cff",
     "Solana": "#a78bfa",
-    "BNB": "#f5b942",
-    "Gram (TON)": "#33d6a6",
-    "Lainnya": "#8b93a6"
-
+    "BNB": "#f2c14e",
+    "Gram (TON)": "#34c9a0",
+    "Lainnya": "#8a909b"
 };
 
 /* ==========================================
@@ -48,7 +44,6 @@ function load() {
     } catch (error) {
 
         console.error("Gagal membaca wallet:", error);
-
         return [];
 
     }
@@ -61,10 +56,7 @@ function save() {
 
     try {
 
-        localStorage.setItem(
-            STORAGE_KEY,
-            JSON.stringify(wallets)
-        );
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(wallets));
 
         pushToCloud();
 
@@ -77,9 +69,7 @@ function save() {
 }
 
 export function getWallets() {
-
     return wallets;
-
 }
 
 /* ==========================================
@@ -89,40 +79,28 @@ export function getWallets() {
 export async function addWallet(data) {
 
     const address = data.address.trim();
-
     const chain = data.chain.trim();
 
     if (!chain) {
-
-        await showAlert("Chain is required.");
-
+        await showAlert(t("wallet.chainRequired"));
         return false;
-
     }
 
     if (!address) {
-
-        await showAlert("Wallet address is required.");
-
+        await showAlert(t("wallet.addressRequired"));
         return false;
-
     }
 
     wallets.push({
-
         id: Date.now(),
-
         chain: chain,
-
         address: address,
-
         note: data.note.trim()
-
     });
 
     save();
 
-    showToast("Wallet added successfully.");
+    showToast(t("wallet.addedSuccess"));
 
     return true;
 
@@ -134,25 +112,15 @@ export async function addWallet(data) {
 
 export async function deleteWallet(id) {
 
-    const confirmed = await showConfirm(
-        "Delete this wallet? This action cannot be undone."
-    );
+    const confirmed = await showConfirm(t("wallet.deleteConfirm"), t("dialog.delete"));
 
-    if (!confirmed) {
+    if (!confirmed) return false;
 
-        return false;
-
-    }
-
-    wallets = wallets.filter(
-
-        wallet => wallet.id !== Number(id)
-
-    );
+    wallets = wallets.filter(wallet => wallet.id !== Number(id));
 
     save();
 
-    showToast("Wallet deleted successfully.");
+    showToast(t("wallet.deletedSuccess"));
 
     return true;
 
@@ -167,26 +135,19 @@ const walletList = document.getElementById("walletList");
 export function renderWallets() {
 
     if (wallets.length === 0) {
-
-        walletList.innerHTML = `
-            <div class="empty">
-                No wallets yet.
-            </div>
-        `;
-
+        walletList.innerHTML = `<div class="empty">${t("wallet.empty")}</div>`;
         return;
-
     }
 
     let html = "";
 
-    wallets.forEach(wallet => {
+    wallets.forEach((wallet, index) => {
 
         const icon = CHAIN_ICONS[wallet.chain] || "🔗";
-        const dot = CHAIN_COLORS[wallet.chain] || "#8b93a6";
+        const dot = CHAIN_COLORS[wallet.chain] || "#8a909b";
 
         html += `
-        <div class="simple-card">
+        <div class="simple-card" style="animation-delay:${index * 40}ms">
 
             <div class="simple-card-info">
 
@@ -198,8 +159,8 @@ export function renderWallets() {
                         class="copy-btn"
                         data-action="copy"
                         data-address="${wallet.address}"
-                        title="Copy address">
-                        <i class="copy-icon">${ICON_COPY}</i>
+                        title="${t("wallet.copyAddress")}">
+                        <i class="fa-solid fa-copy" aria-hidden="true"></i>
                     </button>
                 </p>
 
@@ -212,9 +173,7 @@ export function renderWallets() {
                 data-action="delete"
                 data-id="${wallet.id}"
                 style="flex:none; padding:11px 16px;">
-
-                <i class="trash-icon">${ICON_TRASH}</i> Delete
-
+                <i class="fa-solid fa-trash" aria-hidden="true"></i> ${t("project.deleteBtn")}
             </button>
 
         </div>
@@ -235,13 +194,8 @@ walletList.addEventListener("click", async (e) => {
     const action = button.dataset.action;
 
     if (action === "copy") {
-
-        const address = button.dataset.address;
-
-        copyToClipboard(address);
-
+        copyToClipboard(button.dataset.address);
         return;
-
     }
 
     const id = Number(button.dataset.id);
@@ -250,11 +204,7 @@ walletList.addEventListener("click", async (e) => {
 
         const success = await deleteWallet(id);
 
-        if (success) {
-
-            renderWallets();
-
-        }
+        if (success) renderWallets();
 
     }
 
@@ -269,7 +219,7 @@ function copyToClipboard(text) {
     if (navigator.clipboard && navigator.clipboard.writeText) {
 
         navigator.clipboard.writeText(text)
-            .then(() => showToast("Wallet address copied."))
+            .then(() => showToast(t("wallet.addressCopied")))
             .catch(() => fallbackCopy(text));
 
     } else {
@@ -285,9 +235,7 @@ function fallbackCopy(text) {
     const temp = document.createElement("textarea");
 
     temp.value = text;
-
     temp.style.position = "fixed";
-
     temp.style.opacity = "0";
 
     document.body.appendChild(temp);
@@ -297,8 +245,7 @@ function fallbackCopy(text) {
     try {
 
         document.execCommand("copy");
-
-        showToast("Wallet address copied.");
+        showToast(t("wallet.addressCopied"));
 
     } catch (error) {
 
@@ -322,9 +269,7 @@ const saveWalletBtn = document.getElementById("saveWallet");
 function openWalletModal() {
 
     document.getElementById("walletChain").selectedIndex = 0;
-
     document.getElementById("walletAddress").value = "";
-
     document.getElementById("walletNote").value = "";
 
     walletModal.style.display = "flex";
@@ -342,47 +287,27 @@ function closeWalletModal() {
 }
 
 addWalletBtn.addEventListener("click", openWalletModal);
-
 closeWalletModalBtn.addEventListener("click", closeWalletModal);
 
 window.addEventListener("click", (e) => {
-
-    if (e.target === walletModal) {
-
-        closeWalletModal();
-
-    }
-
+    if (e.target === walletModal) closeWalletModal();
 });
 
 document.addEventListener("keydown", (e) => {
-
-    if (e.key === "Escape") {
-
-        closeWalletModal();
-
-    }
-
+    if (e.key === "Escape") closeWalletModal();
 });
 
 saveWalletBtn.addEventListener("click", async () => {
 
     const success = await addWallet({
-
         chain: document.getElementById("walletChain").value,
-
         address: document.getElementById("walletAddress").value,
-
         note: document.getElementById("walletNote").value
-
     });
 
     if (success) {
-
         closeWalletModal();
-
         renderWallets();
-
     }
 
 });
@@ -392,7 +317,5 @@ saveWalletBtn.addEventListener("click", async () => {
 ========================================== */
 
 export function initWallet() {
-
     renderWallets();
-
 }
